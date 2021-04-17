@@ -6,19 +6,23 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/*
+章节表
+课程每一张有什么内容
+ */
 @Data
 @NoArgsConstructor
 @Entity
-public class Doc {
+public class Chapter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String title; // 标题
-    private String content; // 描述 不进行具体细分 用户自己填
-    private Integer type; // 0 面经 1 博客 2 升学信息 3 企业招聘
-    private Integer status; // 0 草稿 1 已发布
+    private String title;
+    private String content;
+    private Integer orderId; // 编号
+    private Integer status; // 0 正常 1 删除
     @ManyToOne
-    private User user;
+    private Course course;
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,
             updatable = false)
@@ -28,3 +32,4 @@ public class Doc {
             updatable = false)
     private LocalDateTime updateTime;
 }
+
