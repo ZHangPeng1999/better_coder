@@ -30,13 +30,12 @@ public class MenuService {
         menuRepository.refresh(menu);
         return menu;
     }
-    public Menu updateMenu(Integer id, String name, String path, Integer open){
+    public Menu updateMenu(Integer id,Integer open){
         Menu menu = menuRepository.getOne(id);
-        menu.setName(name);
-        menu.setPath(path);
+//        menu.setName(name);
+//        menu.setPath(path);
         menu.setOpen(open); // 默认开启
         menuRepository.save(menu);
-        menuRepository.refresh(menu);
         return menu;
     }
 }

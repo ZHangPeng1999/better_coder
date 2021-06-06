@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -43,28 +44,35 @@ public class DocService {
         doc.setStatus(status);
         doc.setTitle(title);
         docRepository.save(doc);
-        docRepository.refresh(doc);
         return doc;
     }
     public Doc getDoc(Integer id){
         return docRepository.getOne(id);
     }
-    public List<Doc> searchDoc(String title, String content, Integer type,Integer status, Integer offset, Integer limit) {
+    public Map searchDoc(String title, String content, Integer type, Integer status, Integer offset, Integer limit) {
         if (limit == 0) {
             limit = 20;
         }
         Pageable pageable = PageRequest.of(offset, limit);
         Doc doc = new Doc();
-        doc.setTitle(title);
-        doc.setContent(content);
-        doc.setType(type);
-        doc.setStatus(status);
+        if (title.length() != 0) {
+            doc.setTitle(title);
+        }
+        if (content.length() != 0) {
+            doc.setContent(content);
+        }
+        if (type != 0) {
+            doc.setType(type);
+        }
+        if (status != 0) {
+            doc.setStatus(status);
+        }
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains());
 
         Example<Doc> ex = Example.of(doc, matcher);
-        return docRepository.findAll(ex, pageable).getContent();
+        return Map.of("docs", docRepository.findAll(ex, pageable).getContent(), "total",  docRepository.findAll(ex, pageable).getTotalElements());
     }
 
 }

@@ -11,19 +11,26 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"chooseQuestions"})
+@JsonIgnoreProperties({"chooseQuestions","hibernateLazyInitializer"})
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title; // 标题
     private String content; // 描述 不进行具体细分 用户自己填
+    private String ASelect;
+    private String BSelect;
+    private String CSelect;
+    private String DSelect;
+    private String Voice;
+
+    private Integer status; // 1 草稿 2 发布
     private Integer type; // 0 选择 1 填空 2 简答 3编程
     private String bizType; // c++ / java / python / 计算机组成原理....
     private String answer; // 0 A/B/C/D 1 对应结果 2 对应答案 3 正确运行结果数据uri
     private String testData; // 编程题 测试数据 文件路径
     private Integer level; // 题目等级用于组题
-    @OneToMany
+    @OneToMany(mappedBy = "question")
     private List<ChooseQuestion> chooseQuestions;
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,

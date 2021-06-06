@@ -7,10 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface QuestionRepository  extends BaseRepository<Question,Integer> {
-    @Query(value = "select * from Question  where level=:level and biz_type= :bizType and type = :type order by Rand()", nativeQuery = true)
-    Page<Question> getRandQuestions(@Param("level")Integer level,@Param("bizType")String bizType, @Param("type")Integer type, Pageable pageable);
+    @Query(value = "select * from Question  where level in (:level) and biz_type like :bizType and type = :type order by Rand()", nativeQuery = true)
+    Page<Question> getRandQuestions(@Param("level") List<Integer> level, @Param("bizType")String bizType, @Param("type")Integer type, Pageable pageable);
 
 
 }

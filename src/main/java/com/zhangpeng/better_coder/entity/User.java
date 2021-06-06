@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"chooseQuestions","chooseCourses","exams","docs"})
+@JsonIgnoreProperties({"chooseQuestions","chooseCourses","exams","docs","hibernateLazyInitializer"})
 public class User {
     public enum Role{
         ADMIN,USER
@@ -21,7 +21,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)//拒绝序列化
+    private Integer number;
     private Role role;
     private String password;
     @OneToMany (mappedBy = "user")

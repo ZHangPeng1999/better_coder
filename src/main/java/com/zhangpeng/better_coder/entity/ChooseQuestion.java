@@ -1,5 +1,6 @@
 package com.zhangpeng.better_coder.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class ChooseQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

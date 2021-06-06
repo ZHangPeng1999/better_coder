@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,11 +46,23 @@ public class ExamService {
      * @return
      */
     public Exam addExam(Integer uId,String bizType,Integer level){
-        List<Question> questions = List.of();
-        questionRepository.getRandQuestions(level, bizType, 0, PageRequest.of(0,5))
-                .getContent().forEach(question -> questions.add(question));
-        questionRepository.getRandQuestions(level, bizType, 1, PageRequest.of(0,5))
-                .getContent().forEach(question -> questions.add(question));
+        List<Question> questions = new ArrayList<>();
+        List<Integer> levels = List.of();
+        if (level == 0) {
+            levels = List.of(1,2,3);
+        } else {
+            levels = List.of(level);
+        }
+       List<Question> questions1 =  questionRepository.getRandQuestions(levels, bizType, 2, PageRequest.of(0,5))
+                .getContent();
+        for (Question question : questions1) {
+            questions.add(question);
+        }
+        List<Question> questions2 = questionRepository.getRandQuestions(levels, bizType, 1, PageRequest.of(0,5))
+                .getContent();
+        for (Question question : questions2) {
+            questions.add(question);
+        }
         User user = userRepository.getOne(uId);
         Exam exam = new Exam();
         exam.setUser(user);
@@ -61,8 +74,37 @@ public class ExamService {
             chooseQuestion.setExam(exam);
             chooseQuestionRepository.save(chooseQuestion);
         });
-        return null;
+        return exam;
     }
+
+    public Exam addInterview(Integer uId,String bizType,Integer level){
+        List<Question> questions = new ArrayList<>();
+        List<Integer> levels = List.of();
+        if (level == 0) {
+            levels = List.of(1,2,3);
+        } else {
+            levels = List.of(level);
+        }
+        List<Question> questions1 =  questionRepository.getRandQuestions(levels, bizType, 3, PageRequest.of(0,2))
+                .getContent();
+        for (Question question : questions1) {
+            questions.add(question);
+        }
+        User user = userRepository.getOne(uId);
+        Exam exam = new Exam();
+        exam.setUser(user);
+        exam.setType(2);
+        examRepository.save(exam);
+        examRepository.refresh(exam);
+        questions.forEach(question -> {
+            ChooseQuestion chooseQuestion = new ChooseQuestion();
+            chooseQuestion.setQuestion(question);
+            chooseQuestion.setExam(exam);
+            chooseQuestionRepository.save(chooseQuestion);
+        });
+        return exam;
+    }
+
     public List<Exam> searchExam(Integer offset, Integer limit) {
         if (limit == 0) {
             limit = 20;
@@ -74,26 +116,27 @@ public class ExamService {
     /**
      * 判题
      * @param eId
-     * @param uId
      * @param chooseQuestions
      * @return
      */
-    public Exam checkExam(Integer eId, Integer uId, List<ChooseQuestion> chooseQuestions) {
+    public Exam checkExam(Integer eId, List<ChooseQuestion> chooseQuestions) {
         Exam exam = examRepository.getOne(eId);
-        User user = userRepository.getOne(uId);
         int sum=0;
         for (ChooseQuestion chooseQuestion : chooseQuestions) {
             Question question = chooseQuestion.getQuestion();
-            if (question.getType() == 0 || question.getType() == 1) {
+            if (question.getType() == 1 || question.getType() == 2) {
                 chooseQuestion.setResult("错误");
-                if (chooseQuestion.getAnswer() == question.getAnswer()) {
+                if (chooseQuestion.getAnswer().equals( question.getAnswer())) {
                     chooseQuestion.setResult("正确");
                     sum = sum+1;
                 }
                 chooseQuestionRepository.save(chooseQuestion);
+            } else {
+                chooseQuestion.setResult("简答题不做判断");
+                chooseQuestionRepository.save(chooseQuestion);
             }
         }
-        exam.setGrade(sum);
+        exam.setGrade(sum*10);
         examRepository.save(exam);
         return exam;
     }

@@ -27,9 +27,9 @@ class BetterCoderApplicationTests {
     @Test
     void contextLoads() {
     }
-    @Test
-    void testExamRepository(){
-       questionService.addSelectQuestion("123","2313","123",1,"12312");
-    }
+//    @Test
+//    void testExamRepository(){
+//       questionService.addSelectQuestion("123","2313","123",1,"12312");
+//    }
 
 }

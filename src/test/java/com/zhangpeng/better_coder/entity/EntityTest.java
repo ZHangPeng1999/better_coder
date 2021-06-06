@@ -20,10 +20,10 @@ public class EntityTest {
     private QuestionRepository questionRepository;
     @Autowired
     private QuestionService questionService;
-    @Test
-    void testExamRepository(){
-        questionRepository.getRandQuestions(1,0, PageRequest.of(0,1)).getContent()
-                .forEach(question -> System.out.println(question.getContent()));
-    }
+//    @Test
+//    void testExamRepository(){
+//        questionRepository.getRandQuestions(1,0, PageRequest.of(0,1)).getContent()
+//                .forEach(question -> System.out.println(question.getContent()));
+//    }
 
 }

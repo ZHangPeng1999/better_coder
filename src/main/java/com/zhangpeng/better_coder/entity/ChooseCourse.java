@@ -13,7 +13,7 @@ public class ChooseCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Float completeness; // 完成度
+    private Integer completeness; // 完成度
     private Integer chapterOrderId; // 阅读当前章节的id
     @ManyToOne
     private Course course;

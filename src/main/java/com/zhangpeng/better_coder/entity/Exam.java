@@ -11,12 +11,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"chooseQuestions"})
+@JsonIgnoreProperties({"chooseQuestions","hibernateLazyInitializer"})
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer grade;
+    private Integer grade = 0;
+    private Integer type = 1;
     @OneToMany (mappedBy = "exam")
     private List<ChooseQuestion> chooseQuestions;
     @ManyToOne

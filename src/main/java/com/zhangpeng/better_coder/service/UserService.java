@@ -4,15 +4,13 @@ import com.zhangpeng.better_coder.entity.User;
 import com.zhangpeng.better_coder.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -28,20 +26,23 @@ public class UserService {
      * @param limit
      * @return
      */
-    public List<User> searchUser(String name, Integer offset, Integer limit) {
+    public Map searchUser(Integer num, String name, Integer offset, Integer limit) {
         if (limit == 0) {
             limit = 20;
         }
         Pageable pageable = PageRequest.of(offset, limit);
-        if (name.length() == 0) {
-            return userRepository.findAll(pageable).getContent();
-        }
         User user = new User();
-        user.setName(name);
+        if (num != 0) {
+            user.setNumber(num);
+        }
+        if (name.length() != 0) {
+            user.setName(name);
+        }
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
         Example<User> ex = Example.of(user, matcher);
-        return userRepository.findAll(ex, pageable).getContent();
+        Page<User> result = userRepository.findAll(ex, pageable);
+        return Map.of("users",result.getContent(), "total", result.getTotalElements());
     }
 
     /**
@@ -52,7 +53,9 @@ public class UserService {
     public User getUser(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
-
+    public User getUserByNum(Integer num) {
+        return userRepository.findByNum(num);
+    }
     /**
      * 添加一个用户
      * @param name
@@ -60,11 +63,12 @@ public class UserService {
      * @param role
      * @return
      */
-    public User addUser (String name, String password, User.Role role) {
+    public User addUser (String name, String password, User.Role role, Integer number) {
         User user = new User();
         user.setName(name);
         user.setRole(role);
         user.setPassword(password);
+        user.setNumber(number);
         userRepository.save(user);
         userRepository.refresh(user);
         return user;
@@ -89,4 +93,5 @@ public class UserService {
         userRepository.save(user);
         return user;
     }
+
 }
